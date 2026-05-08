@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro Todo List</title>
+    <title>Retro Arcade Platform</title>
     <style>
         * {
             margin: 0;
@@ -17,7 +17,6 @@
             --tertiary: #00ffff;
             --dark: #0a0e27;
             --darker: #050809;
-            --border: #00ff41;
         }
 
         body {
@@ -65,9 +64,9 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 20px;
             position: relative;
             z-index: 1;
         }
@@ -78,18 +77,19 @@
         }
 
         h1 {
-            font-size: 48px;
+            font-size: 56px;
             color: var(--primary);
-            text-shadow: 0 0 10px var(--primary);
-            letter-spacing: 2px;
+            text-shadow: 0 0 20px var(--primary);
+            letter-spacing: 3px;
             margin-bottom: 10px;
             animation: flicker 0.15s infinite;
         }
 
         .subtitle {
             color: var(--tertiary);
-            font-size: 14px;
-            letter-spacing: 1px;
+            font-size: 16px;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
         }
 
         @keyframes flicker {
@@ -97,313 +97,761 @@
             50% { opacity: 0.95; }
         }
 
-        .input-section {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+        .games-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
         }
 
-        input[type="text"] {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid var(--primary);
+        .game-card {
+            border: 3px solid var(--primary);
             background-color: var(--dark);
-            color: var(--primary);
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .game-card:hover {
+            background-color: var(--primary);
+            color: var(--darker);
+            box-shadow: 0 0 30px var(--primary);
+            transform: translate(0, -10px);
+        }
+
+        .game-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .game-card h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        input[type="text"]::placeholder {
-            color: var(--primary);
-            opacity: 0.5;
+        .game-card p {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 15px;
         }
 
-        input[type="text"]:focus {
-            outline: none;
-            box-shadow: 0 0 10px var(--primary);
+        .game-controls {
+            font-size: 11px;
+            background-color: rgba(0, 255, 65, 0.1);
+            padding: 10px;
+            border: 1px dashed var(--primary);
+            margin: 10px 0;
         }
 
-        button {
-            padding: 12px 24px;
+        .play-btn {
+            padding: 10px 20px;
             border: 2px solid var(--primary);
             background-color: var(--darker);
             color: var(--primary);
             font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.2s;
-            letter-spacing: 1px;
+            width: 100%;
         }
 
-        button:hover {
+        .play-btn:hover {
             background-color: var(--primary);
             color: var(--darker);
-            box-shadow: 0 0 10px var(--primary);
         }
 
-        button:active {
-            transform: scale(0.95);
+        #gameContainer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--darker);
+            z-index: 200;
+            overflow: hidden;
         }
 
-        .todo-list {
-            border: 2px solid var(--primary);
-            background-color: var(--dark);
-        }
-
-        .todo-item {
+        #gameContainer.active {
             display: flex;
+            flex-direction: column;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
             padding: 15px;
-            border-bottom: 1px dashed var(--primary);
-            gap: 10px;
-            transition: background-color 0.2s;
+            border-bottom: 2px solid var(--primary);
+            background: linear-gradient(90deg, rgba(0, 255, 65, 0.1), transparent);
         }
 
-        .todo-item:last-child {
-            border-bottom: none;
-        }
-
-        .todo-item:hover {
-            background-color: rgba(0, 255, 65, 0.05);
-        }
-
-        .todo-item.completed {
-            opacity: 0.6;
-        }
-
-        .todo-item.completed .todo-text {
-            text-decoration: line-through;
-            color: var(--secondary);
-        }
-
-        .checkbox {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: var(--primary);
-        }
-
-        .todo-text {
-            flex: 1;
-            font-size: 14px;
-            word-break: break-word;
-        }
-
-        .delete-btn {
-            padding: 6px 12px;
+        .back-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--primary);
+            background-color: var(--darker);
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
             font-size: 12px;
-            border-color: var(--secondary);
-            color: var(--secondary);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .delete-btn:hover {
-            background-color: var(--secondary);
+        .back-btn:hover {
+            background-color: var(--primary);
             color: var(--darker);
         }
 
-        .stats {
-            margin-top: 30px;
-            padding: 15px;
-            border: 2px solid var(--primary);
-            background-color: var(--dark);
-            text-align: center;
-            font-size: 12px;
+        .game-title {
+            font-size: 24px;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
         }
 
-        .stat-row {
-            margin: 5px 0;
-        }
-
-        .stat-number {
+        .game-stats {
+            font-size: 16px;
             color: var(--secondary);
-            font-weight: bold;
             text-shadow: 0 0 5px var(--secondary);
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--primary);
-            opacity: 0.5;
+        .canvas-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        canvas {
+            border: 3px solid var(--primary);
+            background-color: var(--dark);
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            max-width: 90vw;
+            max-height: 80vh;
+        }
+
+        .leaderboard {
+            margin-top: 40px;
+            padding: 20px;
+            border: 3px solid var(--primary);
+            background-color: var(--dark);
+        }
+
+        .leaderboard h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .leaderboard-list {
             font-size: 14px;
+            line-height: 1.8;
         }
 
-        .clear-all-btn {
-            width: 100%;
-            margin-top: 20px;
-            border-color: var(--secondary);
+        .leaderboard-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--primary);
+        }
+
+        .leaderboard-entry:last-child {
+            border-bottom: none;
+        }
+
+        .rank {
             color: var(--secondary);
+            font-weight: bold;
+            min-width: 30px;
         }
 
-        .clear-all-btn:hover {
-            background-color: var(--secondary);
-            color: var(--darker);
+        .score {
+            color: var(--tertiary);
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>TODO LIST</h1>
-            <p class="subtitle">~ RETRO TASK MANAGER ~</p>
+            <h1>🎮 RETRO ARCADE 🎮</h1>
+            <p class="subtitle">~ CLASSIC GAMES, PURE NOSTALGIA ~</p>
         </div>
 
-        <div class="input-section">
-            <input 
-                type="text" 
-                id="todoInput" 
-                placeholder="Enter a new task..."
-                autocomplete="off"
-            >
-            <button onclick="addTodo()">ADD</button>
-        </div>
-
-        <div class="todo-list" id="todoList">
-            <div class="empty-state">No tasks yet. Add one to get started!</div>
-        </div>
-
-        <div class="stats">
-            <div class="stat-row">
-                Total: <span class="stat-number" id="totalCount">0</span>
+        <div class="games-container">
+            <!-- Space Blaster -->
+            <div class="game-card">
+                <div class="game-icon">🚀</div>
+                <h2>Space Blaster</h2>
+                <p>Destroy enemy ships and survive!</p>
+                <div class="game-controls">ARROW KEYS: Move<br>SPACE: Shoot</div>
+                <button class="play-btn" onclick="startGame('space-blaster')">PLAY</button>
             </div>
-            <div class="stat-row">
-                Completed: <span class="stat-number" id="completedCount">0</span>
+
+            <!-- Brick Breaker -->
+            <div class="game-card">
+                <div class="game-icon">🧱</div>
+                <h2>Brick Breaker</h2>
+                <p>Break all the bricks with your paddle!</p>
+                <div class="game-controls">ARROW KEYS: Move Paddle<br>SPACE: Launch Ball</div>
+                <button class="play-btn" onclick="startGame('brick-breaker')">PLAY</button>
             </div>
-            <div class="stat-row">
-                Remaining: <span class="stat-number" id="remainingCount">0</span>
+
+            <!-- Snake Rush -->
+            <div class="game-card">
+                <div class="game-icon">🐍</div>
+                <h2>Snake Rush</h2>
+                <p>Eat food and grow without hitting yourself!</p>
+                <div class="game-controls">ARROW KEYS: Change Direction</div>
+                <button class="play-btn" onclick="startGame('snake-rush')">PLAY</button>
+            </div>
+
+            <!-- Pac Maze -->
+            <div class="game-card">
+                <div class="game-icon">👾</div>
+                <h2>Pac Maze</h2>
+                <p>Navigate the maze and collect all pellets!</p>
+                <div class="game-controls">ARROW KEYS: Move<br>SPACE: Boost</div>
+                <button class="play-btn" onclick="startGame('pac-maze')">PLAY</button>
             </div>
         </div>
 
-        <button class="clear-all-btn" onclick="clearCompleted()">CLEAR COMPLETED</button>
+        <div class="leaderboard">
+            <h3>🏆 HALL OF FAME 🏆</h3>
+            <div class="leaderboard-list" id="leaderboardList">
+                <div class="leaderboard-entry">
+                    <span class="rank">1.</span>
+                    <span>PIXEL_MASTER</span>
+                    <span class="score">9,850</span>
+                </div>
+                <div class="leaderboard-entry">
+                    <span class="rank">2.</span>
+                    <span>ARCADE_LEGEND</span>
+                    <span class="score">8,920</span>
+                </div>
+                <div class="leaderboard-entry">
+                    <span class="rank">3.</span>
+                    <span>RETRO_KING</span>
+                    <span class="score">7,650</span>
+                </div>
+                <div class="leaderboard-entry">
+                    <span class="rank">4.</span>
+                    <span>GAME_HUNTER</span>
+                    <span class="score">6,543</span>
+                </div>
+                <div class="leaderboard-entry">
+                    <span class="rank">5.</span>
+                    <span>YOU</span>
+                    <span class="score" id="playerScore">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameContainer">
+        <div class="game-header">
+            <button class="back-btn" onclick="endGame()">← BACK</button>
+            <div class="game-title" id="gameTitle">GAME TITLE</div>
+            <div class="game-stats">Score: <span id="score">0</span></div>
+        </div>
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+        </div>
     </div>
 
     <script>
-        // Local Storage Keys
-        const STORAGE_KEY = 'retro-todos';
+        const STORAGE_KEY = 'arcade-scores';
+        let currentGame = null;
+        let gameRunning = false;
+        let score = 0;
 
-        // Load todos from local storage
-        function loadTodos() {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            return stored ? JSON.parse(stored) : [];
-        }
+        function startGame(game) {
+            currentGame = game;
+            score = 0;
+            gameRunning = true;
+            document.getElementById('gameContainer').classList.add('active');
+            document.getElementById('gameTitle').textContent = getGameTitle(game);
+            updateScore();
 
-        // Save todos to local storage
-        function saveTodos(todos) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-        }
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
 
-        // Add a new todo
-        function addTodo() {
-            const input = document.getElementById('todoInput');
-            const text = input.value.trim();
-
-            if (text === '') {
-                alert('Please enter a task!');
-                return;
+            if (game === 'space-blaster') {
+                playSpaceBlaster(canvas, ctx);
+            } else if (game === 'brick-breaker') {
+                playBrickBreaker(canvas, ctx);
+            } else if (game === 'snake-rush') {
+                playSnakeRush(canvas, ctx);
+            } else if (game === 'pac-maze') {
+                playPacMaze(canvas, ctx);
             }
+        }
 
-            const todos = loadTodos();
-            const newTodo = {
-                id: Date.now(),
-                text: text,
-                completed: false
+        function endGame() {
+            gameRunning = false;
+            currentGame = null;
+            document.getElementById('gameContainer').classList.remove('active');
+            saveScore(score);
+        }
+
+        function getGameTitle(game) {
+            const titles = {
+                'space-blaster': '🚀 SPACE BLASTER 🚀',
+                'brick-breaker': '🧱 BRICK BREAKER 🧱',
+                'snake-rush': '🐍 SNAKE RUSH 🐍',
+                'pac-maze': '👾 PAC MAZE 👾'
             };
-
-            todos.push(newTodo);
-            saveTodos(todos);
-            input.value = '';
-            input.focus();
-            renderTodos();
+            return titles[game] || 'GAME';
         }
 
-        // Toggle todo completion
-        function toggleTodo(id) {
-            const todos = loadTodos();
-            const todo = todos.find(t => t.id === id);
-            if (todo) {
-                todo.completed = !todo.completed;
-                saveTodos(todos);
-                renderTodos();
-            }
+        function updateScore() {
+            document.getElementById('score').textContent = score;
         }
 
-        // Delete a todo
-        function deleteTodo(id) {
-            const todos = loadTodos();
-            const filtered = todos.filter(t => t.id !== id);
-            saveTodos(filtered);
-            renderTodos();
+        function addScore(points) {
+            score += points;
+            updateScore();
         }
 
-        // Clear all completed todos
-        function clearCompleted() {
-            const todos = loadTodos();
-            const remaining = todos.filter(t => !t.completed);
-            
-            if (remaining.length === todos.length) {
-                alert('No completed tasks to clear!');
-                return;
+        // ==================== SPACE BLASTER ====================
+        function playSpaceBlaster(canvas, ctx) {
+            const player = { x: canvas.width / 2 - 15, y: canvas.height - 40, width: 30, height: 30, speed: 5 };
+            const bullets = [];
+            const enemies = [];
+            const keys = {};
+
+            function initEnemies() {
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        enemies.push({ x: i * 150 + 50, y: j * 60 + 30, width: 30, height: 30, speed: 1 });
+                    }
+                }
             }
 
-            saveTodos(remaining);
-            renderTodos();
-        }
+            function draw() {
+                // Clear canvas
+                ctx.fillStyle = '#0a0e27';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Render todos
-        function renderTodos() {
-            const todos = loadTodos();
-            const todoList = document.getElementById('todoList');
+                // Draw stars
+                ctx.fillStyle = '#00ff41';
+                for (let i = 0; i < 30; i++) {
+                    const starX = (i * 137) % canvas.width;
+                    const starY = (i * 73) % canvas.height;
+                    ctx.fillRect(starX, starY, 2, 2);
+                }
 
-            if (todos.length === 0) {
-                todoList.innerHTML = '<div class="empty-state">No tasks yet. Add one to get started!</div>';
-            } else {
-                todoList.innerHTML = todos.map(todo => `
-                    <div class="todo-item ${todo.completed ? 'completed' : ''}">
-                        <input 
-                            type="checkbox" 
-                            class="checkbox" 
-                            ${todo.completed ? 'checked' : ''}
-                            onchange="toggleTodo(${todo.id})"
-                        >
-                        <span class="todo-text">${escapeHtml(todo.text)}</span>
-                        <button class="delete-btn" onclick="deleteTodo(${todo.id})">DELETE</button>
-                    </div>
-                `).join('');
+                // Draw player
+                ctx.fillStyle = '#00ff41';
+                ctx.fillRect(player.x, player.y, player.width, player.height);
+                ctx.fillRect(player.x + 5, player.y - 10, 5, 10);
+                ctx.fillRect(player.x + 20, player.y - 10, 5, 10);
+
+                // Draw bullets
+                ctx.fillStyle = '#ff00ff';
+                bullets.forEach((bullet, idx) => {
+                    bullet.y -= 7;
+                    ctx.fillRect(bullet.x, bullet.y, 3, 10);
+                    if (bullet.y < 0) bullets.splice(idx, 1);
+                });
+
+                // Draw enemies
+                ctx.fillStyle = '#00ffff';
+                enemies.forEach((enemy, idx) => {
+                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                    ctx.fillRect(enemy.x + 3, enemy.y + 3, 3, 3);
+                    ctx.fillRect(enemy.x + 24, enemy.y + 3, 3, 3);
+
+                    // Move enemy
+                    enemy.x += enemy.speed;
+                    if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) {
+                        enemy.speed *= -1;
+                        enemy.y += 30;
+                    }
+
+                    // Check collision with bullets
+                    bullets.forEach((bullet, bidx) => {
+                        if (bullet.x < enemy.x + enemy.width &&
+                            bullet.x + 3 > enemy.x &&
+                            bullet.y < enemy.y + enemy.height &&
+                            bullet.y + 10 > enemy.y) {
+                            enemies.splice(idx, 1);
+                            bullets.splice(bidx, 1);
+                            addScore(10);
+                        }
+                    });
+
+                    // Check collision with player
+                    if (enemy.x < player.x + player.width &&
+                        enemy.x + enemy.width > player.x &&
+                        enemy.y < player.y + player.height &&
+                        enemy.y + enemy.height > player.y) {
+                        gameRunning = false;
+                    }
+                });
+
+                // Move player
+                if (keys['ArrowLeft'] || keys['a']) player.x = Math.max(0, player.x - player.speed);
+                if (keys['ArrowRight'] || keys['d']) player.x = Math.min(canvas.width - player.width, player.x + player.speed);
+
+                // Draw score
+                ctx.fillStyle = '#00ff41';
+                ctx.font = 'bold 20px Courier New';
+                ctx.fillText(`SCORE: ${score}`, 10, 30);
+
+                if (enemies.length === 0) {
+                    ctx.font = 'bold 30px Courier New';
+                    ctx.fillStyle = '#00ff41';
+                    ctx.fillText('YOU WIN!', canvas.width / 2 - 70, canvas.height / 2);
+                }
+
+                if (gameRunning && (enemies.length > 0)) requestAnimationFrame(draw);
+                else if (gameRunning) {
+                    setTimeout(() => {
+                        if (gameRunning) {
+                            enemies.length = 0;
+                            initEnemies();
+                            draw();
+                        }
+                    }, 1000);
+                }
             }
 
-            updateStats();
+            window.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+                if (e.key === ' ') {
+                    bullets.push({ x: player.x + 13, y: player.y });
+                    e.preventDefault();
+                }
+            });
+
+            window.addEventListener('keyup', (e) => keys[e.key] = false);
+
+            initEnemies();
+            draw();
         }
 
-        // Update statistics
-        function updateStats() {
-            const todos = loadTodos();
-            const completed = todos.filter(t => t.completed).length;
-            const remaining = todos.length - completed;
+        // ==================== BRICK BREAKER ====================
+        function playBrickBreaker(canvas, ctx) {
+            const paddle = { x: canvas.width / 2 - 40, y: canvas.height - 20, width: 80, height: 15, speed: 6 };
+            const ball = { x: canvas.width / 2, y: canvas.height - 40, radius: 5, dx: 3, dy: -3 };
+            const bricks = [];
+            let ballLaunched = false;
+            const keys = {};
 
-            document.getElementById('totalCount').textContent = todos.length;
-            document.getElementById('completedCount').textContent = completed;
-            document.getElementById('remainingCount').textContent = remaining;
-        }
-
-        // Escape HTML to prevent XSS
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Add Enter key support
-        document.getElementById('todoInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addTodo();
+            // Create bricks
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 8; col++) {
+                    bricks.push({
+                        x: col * 100,
+                        y: row * 30 + 20,
+                        width: 95,
+                        height: 25,
+                        active: true
+                    });
+                }
             }
-        });
 
-        // Initial render
-        renderTodos();
+            function draw() {
+                ctx.fillStyle = '#0a0e27';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw paddle
+                ctx.fillStyle = '#00ff41';
+                ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+
+                // Move paddle
+                if (keys['ArrowLeft'] || keys['a']) paddle.x = Math.max(0, paddle.x - paddle.speed);
+                if (keys['ArrowRight'] || keys['d']) paddle.x = Math.min(canvas.width - paddle.width, paddle.x + paddle.speed);
+
+                // Move ball
+                if (ballLaunched) {
+                    ball.x += ball.dx;
+                    ball.y += ball.dy;
+                }
+
+                // Ball boundaries
+                if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) ball.dx *= -1;
+                if (ball.y - ball.radius < 0) ball.dy *= -1;
+
+                // Ball hit paddle
+                if (ball.y + ball.radius > paddle.y &&
+                    ball.x > paddle.x &&
+                    ball.x < paddle.x + paddle.width) {
+                    ball.dy *= -1;
+                    addScore(5);
+                }
+
+                // Ball out
+                if (ball.y - ball.radius > canvas.height) gameRunning = false;
+
+                // Draw ball
+                ctx.fillStyle = '#ff00ff';
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw bricks
+                bricks.forEach((brick) => {
+                    if (brick.active) {
+                        ctx.fillStyle = '#00ffff';
+                        ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+
+                        // Ball hit brick
+                        if (ball.x > brick.x &&
+                            ball.x < brick.x + brick.width &&
+                            ball.y > brick.y &&
+                            ball.y < brick.y + brick.height) {
+                            brick.active = false;
+                            ball.dy *= -1;
+                            addScore(20);
+                        }
+                    }
+                });
+
+                // Draw score
+                ctx.fillStyle = '#00ff41';
+                ctx.font = 'bold 20px Courier New';
+                ctx.fillText(`SCORE: ${score}`, 10, 30);
+
+                // Draw instructions
+                if (!ballLaunched) {
+                    ctx.fillStyle = '#00ffff';
+                    ctx.font = 'bold 16px Courier New';
+                    ctx.fillText('Press SPACE to launch', canvas.width / 2 - 90, canvas.height / 2);
+                }
+
+                const activeBricks = bricks.filter(b => b.active).length;
+                if (activeBricks === 0) {
+                    ctx.fillStyle = '#00ff41';
+                    ctx.font = 'bold 30px Courier New';
+                    ctx.fillText('YOU WIN!', canvas.width / 2 - 70, canvas.height / 2);
+                    gameRunning = false;
+                }
+
+                if (gameRunning) requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+                if (e.key === ' ') {
+                    if (!ballLaunched) {
+                        ballLaunched = true;
+                        ball.x = paddle.x + paddle.width / 2;
+                    }
+                    e.preventDefault();
+                }
+            });
+
+            window.addEventListener('keyup', (e) => keys[e.key] = false);
+
+            draw();
+        }
+
+        // ==================== SNAKE RUSH ====================
+        function playSnakeRush(canvas, ctx) {
+            const gridSize = 20;
+            const snake = [{ x: 10, y: 10 }];
+            let food = { x: 15, y: 15 };
+            let direction = { x: 1, y: 0 };
+            let nextDirection = { x: 1, y: 0 };
+            const keys = {};
+
+            function draw() {
+                ctx.fillStyle = '#0a0e27';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Update direction
+                if (keys['ArrowLeft'] && direction.x === 0) nextDirection = { x: -1, y: 0 };
+                if (keys['ArrowRight'] && direction.x === 0) nextDirection = { x: 1, y: 0 };
+                if (keys['ArrowUp'] && direction.y === 0) nextDirection = { x: 0, y: -1 };
+                if (keys['ArrowDown'] && direction.y === 0) nextDirection = { x: 0, y: 1 };
+
+                direction = nextDirection;
+
+                // Move snake
+                const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+                snake.unshift(head);
+
+                // Check food collision
+                if (head.x === food.x && head.y === food.y) {
+                    addScore(10);
+                    food = {
+                        x: Math.floor(Math.random() * (canvas.width / gridSize)),
+                        y: Math.floor(Math.random() * (canvas.height / gridSize))
+                    };
+                } else {
+                    snake.pop();
+                }
+
+                // Check boundaries
+                if (head.x < 0 || head.x >= canvas.width / gridSize ||
+                    head.y < 0 || head.y >= canvas.height / gridSize) {
+                    gameRunning = false;
+                }
+
+                // Check self collision
+                for (let i = 1; i < snake.length; i++) {
+                    if (head.x === snake[i].x && head.y === snake[i].y) {
+                        gameRunning = false;
+                    }
+                }
+
+                // Draw snake
+                ctx.fillStyle = '#00ff41';
+                snake.forEach((segment, idx) => {
+                    if (idx === 0) ctx.fillStyle = '#ff00ff';
+                    ctx.fillRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2);
+                    if (idx === 0) ctx.fillStyle = '#00ff41';
+                });
+
+                // Draw food
+                ctx.fillStyle = '#00ffff';
+                ctx.fillRect(food.x * gridSize + 5, food.y * gridSize + 5, gridSize - 10, gridSize - 10);
+
+                // Draw score
+                ctx.fillStyle = '#00ff41';
+                ctx.font = 'bold 20px Courier New';
+                ctx.fillText(`SCORE: ${score}`, 10, 30);
+                ctx.fillText(`LENGTH: ${snake.length}`, 10, 55);
+
+                if (gameRunning) setTimeout(draw, 100);
+            }
+
+            window.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
+
+            window.addEventListener('keyup', (e) => keys[e.key] = false);
+
+            draw();
+        }
+
+        // ==================== PAC MAZE ====================
+        function playPacMaze(canvas, ctx) {
+            const gridSize = 40;
+            const pacman = { x: 1, y: 1 };
+            const maze = [
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [1,0,1,1,0,1,1,1,0,1,1,0,1,1,1,0,1,1,0,1],
+                [1,0,1,1,0,1,1,1,0,1,1,0,1,1,1,0,1,1,0,1],
+                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1,1],
+                [1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
+                [1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1],
+                [1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1],
+                [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1],
+                [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [1,0,1,1,0,1,1,1,0,1,1,0,1,1,1,0,1,1,0,1],
+                [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],
+                [1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1,1],
+                [1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
+                [1,0,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1],
+                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ];
+
+            let pellets = [];
+            for (let y = 0; y < maze.length; y++) {
+                for (let x = 0; x < maze[0].length; x++) {
+                    if (maze[y][x] === 0 && !(x === 1 && y === 1)) {
+                        pellets.push({ x, y });
+                    }
+                }
+            }
+
+            const keys = {};
+
+            function draw() {
+                ctx.fillStyle = '#0a0e27';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Handle movement
+                let newX = pacman.x;
+                let newY = pacman.y;
+
+                if (keys['ArrowLeft']) newX = pacman.x - 1;
+                if (keys['ArrowRight']) newX = pacman.x + 1;
+                if (keys['ArrowUp']) newY = pacman.y - 1;
+                if (keys['ArrowDown']) newY = pacman.y + 1;
+
+                if (maze[newY] && maze[newY][newX] === 0) {
+                    pacman.x = newX;
+                    pacman.y = newY;
+                }
+
+                // Draw maze
+                ctx.fillStyle = '#00ffff';
+                for (let y = 0; y < maze.length; y++) {
+                    for (let x = 0; x < maze[0].length; x++) {
+                        if (maze[y][x] === 1) {
+                            ctx.fillRect(x * gridSize, y * gridSize, gridSize, gridSize);
+                        }
+                    }
+                }
+
+                // Draw pellets
+                ctx.fillStyle = '#ff00ff';
+                pellets.forEach((pellet, idx) => {
+                    ctx.fillRect(pellet.x * gridSize + 15, pellet.y * gridSize + 15, 10, 10);
+
+                    if (pacman.x === pellet.x && pacman.y === pellet.y) {
+                        pellets.splice(idx, 1);
+                        addScore(5);
+                    }
+                });
+
+                // Draw pacman
+                ctx.fillStyle = '#00ff41';
+                ctx.fillRect(pacman.x * gridSize + 5, pacman.y * gridSize + 5, gridSize - 10, gridSize - 10);
+
+                // Draw score
+                ctx.fillStyle = '#00ff41';
+                ctx.font = 'bold 20px Courier New';
+                ctx.fillText(`SCORE: ${score}`, 10, 30);
+
+                if (pellets.length === 0) {
+                    ctx.fillStyle = '#00ff41';
+                    ctx.font = 'bold 30px Courier New';
+                    ctx.fillText('YOU WIN!', canvas.width / 2 - 70, canvas.height / 2);
+                    gameRunning = false;
+                }
+
+                if (gameRunning) requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
+
+            window.addEventListener('keyup', (e) => keys[e.key] = false);
+
+            draw();
+        }
+
+        function saveScore(finalScore) {
+            const scores = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            scores.push({ game: currentGame, score: finalScore, date: new Date().toISOString() });
+            scores.sort((a, b) => b.score - a.score);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(scores.slice(0, 10)));
+            document.getElementById('playerScore').textContent = finalScore;
+        }
     </script>
 </body>
 </html>
