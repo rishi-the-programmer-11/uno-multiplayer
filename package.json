@@ -1,0 +1,14 @@
+{
+  "name": "uno-multiplayer",
+  "version": "0.1.0",
+  "description": "Minimal-dependency Multiplayer UNO using vanilla JS and a small ws backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "rishi-the-programmer-11",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.13.0"
+  }
+}
