@@ -1,14 +1,43 @@
 {
   "name": "uno-multiplayer",
   "version": "0.1.0",
-  "description": "Minimal-dependency Multiplayer UNO using vanilla JS and a small ws backend",
-  "main": "server.js",
+  "description": "A polished retro arcade platform with pixel art, CRT effects, and multiple mini-games",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node server.js"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "type-check": "tsc --noEmit"
   },
-  "author": "rishi-the-programmer-11",
-  "license": "MIT",
   "dependencies": {
-    "ws": "^8.13.0"
-  }
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "pixi.js": "^8.0.0",
+    "zustand": "^4.4.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "typescript": "^5.1.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "keywords": [
+    "arcade",
+    "retro",
+    "games",
+    "pixel-art",
+    "crt-effects",
+    "leaderboard"
+  ],
+  "author": "rishi-the-programmer-11",
+  "license": "MIT"
 }

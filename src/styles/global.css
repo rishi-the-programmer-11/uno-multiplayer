@@ -1,0 +1,126 @@
+:root {
+  --primary: #00ff41;
+  --secondary: #ff00ff;
+  --tertiary: #00ffff;
+  --dark: #0a0e27;
+  --darker: #050809;
+  --border: #00ff41;
+  --scanline: rgba(0, 0, 0, 0.15);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  font-family: 'Courier New', monospace;
+  background-color: var(--darker);
+  color: var(--primary);
+  overflow: hidden;
+}
+
+body {
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* CRT Screen Effect */
+.crt-screen {
+  position: relative;
+  background: linear-gradient(
+    0deg,
+    var(--darker) 0%,
+    rgba(0, 255, 65, 0.03) 50%,
+    var(--darker) 100%
+  );
+  box-shadow: 
+    inset 0 0 50px rgba(0, 0, 0, 0.5),
+    inset 0 0 20px rgba(0, 255, 65, 0.3);
+}
+
+.crt-screen::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 2px,
+    var(--scanline) 2px,
+    var(--scanline) 4px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+.crt-screen::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    var(--scanline),
+    var(--scanline) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Buttons */
+.btn, .btn-back {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  border: 2px solid var(--primary);
+  background: var(--darker);
+  color: var(--primary);
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn:hover, .btn-back:hover {
+  background: var(--primary);
+  color: var(--darker);
+  box-shadow: 0 0 10px var(--primary);
+}
+
+.btn:active, .btn-back:active {
+  transform: scale(0.95);
+}
+
+.btn-secondary {
+  border-color: var(--secondary);
+  color: var(--secondary);
+}
+
+.btn-secondary:hover {
+  background: var(--secondary);
+  color: var(--darker);
+  box-shadow: 0 0 10px var(--secondary);
+}
+
+/* Text Styles */
+h1, h2, h3 {
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+/* Glow Effect */
+.glow {
+  text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+}
